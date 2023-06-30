@@ -7,11 +7,10 @@ import 'package:flame/sprite.dart';
 import 'package:flame_wolfenstein/engine/player.dart';
 import 'package:flame_wolfenstein/engine/utils.dart';
 import 'package:flame_wolfenstein/engine/world_renderer.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
+class FlameWolfenstein extends Game with KeyboardEvents {
   static final Paint _whitePaint = BasicPalette.white.paint();
 
   late List<List<int>> map;
@@ -21,6 +20,7 @@ class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
   double miniMapScale = 8;
 
   late WorldRenderer worldRenderer;
+
   late Player player;
 
   late SpriteSheet textures;
@@ -100,7 +100,7 @@ class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
     );
 
     player = Player(this)
-      ..rotation = -tau / 4
+      ..angle = -tau / 4
       ..position = Vector2(2, 10);
 
     worldRenderer = WorldRenderer(this)..init();
@@ -141,9 +141,8 @@ class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
       // Right triangle: a = sin(A) * c
       final rayAngle = asin(rayScreenPos / rayViewDist);
       castSingleRay(
-        // Add the players viewing direction
-        // to get the angle in world space
-        player.rotation + rayAngle,
+        // Add the players viewing direction to get the angle in world space
+        player.angle + rayAngle,
         stripIdx++,
       );
     }
@@ -309,8 +308,8 @@ class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
     final path = Path()
       ..moveTo(player.x * miniMapScale, player.y * miniMapScale)
       ..lineTo(
-        (player.x + cos(player.rotation) * miniMapScale / 2) * miniMapScale,
-        (player.y + sin(player.rotation) * miniMapScale / 2) * miniMapScale,
+        (player.x + cos(player.angle) * miniMapScale / 2) * miniMapScale,
+        (player.y + sin(player.angle) * miniMapScale / 2) * miniMapScale,
       )
       ..close();
 
@@ -319,77 +318,19 @@ class FlameWolfenstein extends Game with KeyboardEvents, MultiTouchTapDetector {
   }
 
   @override
-  KeyEventResult onKeyEvent(RawKeyEvent event, _) {
-    final keyLabel = event.logicalKey.keyLabel.toLowerCase();
-    if (event is RawKeyDownEvent) {
-      // Is key down
-      if (keyLabel == 'w') {
-        player.speed = 1;
-      }
-      if (keyLabel == 's') {
-        player.speed = -1;
-      }
-      if (keyLabel == 'a') {
-        player.direction = -1;
-      }
-      if (keyLabel == 'd') {
-        player.direction = 1;
-      }
-    } else {
-      // Is key up
-      if (keyLabel == 'w' || keyLabel == 's') {
-        player.speed = 0;
-      }
-      if (keyLabel == 'a' || keyLabel == 'd') {
-        player.direction = 0;
-      }
-
-      if (keyLabel == 'enter') {
-        pauseEngine();
-        overlays.add('projectInfo');
-      }
-    }
-
+  KeyEventResult onKeyEvent(
+    RawKeyEvent event,
+    Set<LogicalKeyboardKey> keysPressed,
+  ) {
+    readArrowLikeKeysIntoVector2(
+      event,
+      keysPressed,
+      player.move,
+      up: LogicalKeyboardKey.keyW,
+      left: LogicalKeyboardKey.keyA,
+      down: LogicalKeyboardKey.keyS,
+      right: LogicalKeyboardKey.keyD,
+    );
     return KeyEventResult.handled;
-  }
-
-  @override
-  void onTapDown(_, TapDownInfo info) {
-    if (kIsWeb) {
-      return;
-    }
-
-    final middleX = size.x / 2;
-    final middleY = size.y / 2;
-
-    if (info.eventPosition.game.x < middleX) {
-      if (info.eventPosition.game.y < middleY) {
-        player.speed = 1;
-      } else {
-        player.speed = -1;
-      }
-    } else {
-      final midleOfTheHalf = middleX + middleX / 2;
-      if (info.eventPosition.game.x < midleOfTheHalf) {
-        player.direction = -1;
-      } else {
-        player.direction = 1;
-      }
-    }
-  }
-
-  @override
-  void onTapUp(_, TapUpInfo info) {
-    if (kIsWeb) {
-      return;
-    }
-
-    final middleX = size.x / 2;
-
-    if (info.eventPosition.game.x < middleX) {
-      player.speed = 0;
-    } else {
-      player.direction = 0;
-    }
   }
 }

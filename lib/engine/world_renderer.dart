@@ -33,7 +33,7 @@ class WorldRenderer {
   }) {
     final strip = strips[stripIdx];
 
-    final lookDist = sqrt(dist) * cos(gameRef.player.rotation - rayAngle);
+    final lookDist = sqrt(dist) * cos(gameRef.player.angle - rayAngle);
     final height = gameRef.viewDist / lookDist;
     final width = height * FlameWolfenstein.stripWidth;
 

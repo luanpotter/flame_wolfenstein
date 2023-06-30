@@ -15,30 +15,27 @@ class Player {
   Vector2 position = Vector2.zero();
   double get x => position.x;
   double get y => position.y;
+  double angle = 0;
 
-  int direction = 0;
-  double rotation = 0;
-  int speed = 0;
+  Vector2 move = Vector2.zero();
 
   void update(double dt) {
-    // Player will move this far along
-    // the current direction vector
-    final moveStep = speed * moveSpeed * dt;
+    // Player will move this far along the current direction vector
+    final moveStep = -move.y * moveSpeed * dt;
 
     // Add rotation if player is rotating (player.dir != 0)
-    rotation += direction * rotationSpeed * dt;
+    angle += move.x * rotationSpeed * dt;
 
-    // make sure the angle is between 0 and 360 degrees
-    while (rotation < 0) {
-      rotation += tau;
+    // make sure the angle is between 0 and tau
+    while (angle < 0) {
+      angle += tau;
     }
-    while (rotation >= tau) {
-      rotation -= tau;
+    while (angle >= tau) {
+      angle -= tau;
     }
 
     // Calculate new player position with simple trigonometry
-    final newPosition =
-        position + Vector2(cos(rotation), sin(rotation)) * moveStep;
+    final newPosition = position + Vector2(cos(angle), sin(angle)) * moveStep;
 
     // Set new position
     if (!isBlocking(newPosition)) {
