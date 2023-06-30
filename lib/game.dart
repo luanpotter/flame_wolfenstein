@@ -81,14 +81,14 @@ class FlameWolfenstein extends Game with KeyboardEvents {
     map = [
       [1, 2, 1, 1, 1, 2, 1, 1],
       [1, 0, 0, 1, 0, 0, 0, 2],
-      [1, 0, 0, 2, 0, 1, 0, 1],
+      [1, 0, 1, 2, 0, 1, 0, 1],
       [2, 0, 0, 1, 2, 1, 0, 1],
-      [1, 0, 0, 1, 0, 0, 0, 1],
-      [1, 0, 0, 2, 0, 1, 1, 2],
+      [1, 0, 0, 0, 0, 0, 0, 1],
+      [1, 0, 0, 0, 0, 1, 1, 2],
       [1, 0, 0, 1, 0, 0, 0, 1],
       [2, 0, 0, 1, 0, 0, 0, 1],
       [2, 0, 0, 2, 0, 0, 0, 1],
-      [1, 0, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 1, 0, 1, 0, 1],
       [1, 0, 0, 0, 0, 1, 0, 2],
       [1, 0, 0, 0, 0, 1, 0, 1],
       [1, 2, 1, 1, 1, 1, 2, 1],
@@ -101,7 +101,7 @@ class FlameWolfenstein extends Game with KeyboardEvents {
 
     player = Player(this)
       ..angle = -tau / 4
-      ..position = Vector2(2, 10);
+      ..position = Vector2(2, 8);
 
     worldRenderer = WorldRenderer(this)..init();
   }
